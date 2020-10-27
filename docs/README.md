@@ -25,3 +25,9 @@
 - どこまでサーバを作り込む？DB接続と初期化はしておきたい気がする
 - develop/とproduction/を作っておいた方がいいかも。設定ファイルはそこに入れておくみたいな
 - はじめからDockerを想定した開発にしてみる？でもcargo結局使いそうなのであれな気もするけど
+
+## log
+- 2020/10/27
+  - ディレクトリ構成など
+  - dependency入れた(Cargo.toml, actix-web 3.1.0)
+  - develop docker-compose, Makefileで開発環境整えた。
