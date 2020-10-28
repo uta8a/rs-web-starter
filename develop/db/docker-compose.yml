@@ -9,12 +9,4 @@ services:
       POSTGRES_PASSWORD: admin_pass
       POSTGRES_DB: test_db
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
-    volumes:
-      - ../backend/pg:/docker-entrypoint-initdb.d
-  web:
-    build:
-      context: ../backend
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
+    tty: true
