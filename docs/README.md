@@ -7,13 +7,13 @@
   - terraformを用いてAWSのEC2などを立ち上げる
   - ansibleを使ってリモートサーバに対して設定を流す
 - backend
-  - Rust(Actix-web)
+  - Rust(Actix-web) -> ok
 - リバースプロキシ
   - nginx(Docker)
 - HTTPS
   - 証明書の手順もある程度自動化したい
   - 独自ドメイン割り振りもやりたい
-- todoアプリを作る
+- todoアプリを作る -> だいたいok
 
 ## やらないこと
 - フロントエンド(あとでやってもいいかも？Elmを使いたい)
@@ -22,13 +22,8 @@
 
 ## dev
 ```
-$ make db # Docker composeでDB立ち上げて、初期sql投入
-
-$ cd backend
-$ cargo check # localが早いので、checkだけは毎回docker-compose前に行う。envではlocalhostを指定している(hostからlocalhostに接続したDBに向かってつなぐ)
+$ make db # Docker composeでDB立ち上げて、localでの接続やdiesel_cliに使う
 $ make db_down
-
-# buildするときにコンパイルエラーになりそう。どうしようかな
 ```
 
 ## note
@@ -47,6 +42,7 @@ $ make db_down
   - ディレクトリ構成など
   - dependency入れた(Cargo.toml, actix-web 3.1.0)
   - develop docker-compose, Makefileで開発環境整えた。
-
-ビルド時もdb必要ぽいです
-query!などでコンパイル時チェック使うならビルド時にDATABASE_URLを指定してね、そいつは実行時と同じスキーマにしてねとあるので
+- 2020/10/28
+  - dieselでサンプルを構成([Auth0の記事](https://auth0.com/blog/build-an-api-in-rust-with-jwt-authentication-using-actix-web/)を参考にした)
+  - うわものはとりあえずこれでいい気がするので、次はnginxでリバースプロキシを噛ませる
+  - プロダクションでやるときの.envも新しくする
