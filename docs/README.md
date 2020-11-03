@@ -43,6 +43,8 @@ $ make db_down
 - sqlxを断念
   - Docker multi-stage buildを使いたいが、ビルドステージでバイナリを作るときにdbコンテナへの接続が必要になり、この段階でCMDでdb waitを行うことはできないので無理
   - dieselを使おう
+- prodでHTTPSするときはこれやればよさそう https://qiita.com/tnoce/items/ded6d3d298da5972ab63
+  - ひとまず、VirtualHostはしない方針で(1サーバで完結)
 
 ## log
 - 2020/10/27
@@ -57,4 +59,5 @@ $ make db_down
   - CTF ScoreServer v6を作りたいが、それはこのリポジトリを完成させてからの方がいい気がしてきた。
   - REST/Postgres/yewで構成したいので、これらを加える。
   - templateを使ってlocalでyewの立ち上げ完了。これを書き換えていく
-  - 
+  - yewとactixの連携をしたい。単純にAPIサーバとして分離した形をとるので、あまりexampleみなくてもできそう。ただ、Dockerに2つとも別々に載せてcomposeで確認する手間はあるかも
+  - devの方を確定させたい。devでcomposeでfrontとbackの連携をとってnginx reverse proxyまでいきたい。
