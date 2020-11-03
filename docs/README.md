@@ -26,6 +26,13 @@ $ make db # Docker composeでDB立ち上げて、localでの接続やdiesel_cli�
 $ make db_down
 ```
 
+## yew
+- https://yew.rs/docs/en/getting-started/project-setup
+- wasm関連のツールをインストールする必要がありそう。
+- cargo-web/wasm-bindgen/wasm-pack を入れる
+- yarnを入れる(node, npmはもとから入っていた)
+- 
+
 ## note
 - infra部分は分割できる。
 - 上に載せるやつはDocker導入したあとで、そこからtarでかためたDockerImageを送り込んで向こうで展開してloadという手順を考えている(private registryは予算的に厳しいかも、でもやったほうがいいかもしれないので2通り用意したい)
@@ -46,3 +53,8 @@ $ make db_down
   - dieselでサンプルを構成([Auth0の記事](https://auth0.com/blog/build-an-api-in-rust-with-jwt-authentication-using-actix-web/)を参考にした)
   - うわものはとりあえずこれでいい気がするので、次はnginxでリバースプロキシを噛ませる
   - プロダクションでやるときの.envも新しくする
+- 2020/11/03
+  - CTF ScoreServer v6を作りたいが、それはこのリポジトリを完成させてからの方がいい気がしてきた。
+  - REST/Postgres/yewで構成したいので、これらを加える。
+  - templateを使ってlocalでyewの立ち上げ完了。これを書き換えていく
+  - 
