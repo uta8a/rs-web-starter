@@ -31,7 +31,6 @@ $ make db_down
 - wasm関連のツールをインストールする必要がありそう。
 - cargo-web/wasm-bindgen/wasm-pack を入れる
 - yarnを入れる(node, npmはもとから入っていた)
-- 
 
 ## note
 - infra部分は分割できる。
@@ -45,6 +44,25 @@ $ make db_down
   - dieselを使おう
 - prodでHTTPSするときはこれやればよさそう https://qiita.com/tnoce/items/ded6d3d298da5972ab63
   - ひとまず、VirtualHostはしない方針で(1サーバで完結)
+- 構成
+```
+nginx(Host, VirtualHostと監視を行う) : 80 --> nginx(docker, reverse proxy) : 8000
+                                               |--> nginx(frontend, static file deliver) : 8001
+                                               |--> backend(docker server) : 8002
+```
+- 開発段階では、ReverseProxyまで(Docker)をまとめてcomposeにして使う。
+- 権限的には、Host nginxが80番で動くのでRoot、DockerはRoot、composeはNonRoot
+- 最小限のAPI構成を作る。
+  - / 使い方示す
+  - /health 単純な文字列を返す -> /api/health
+  - /init 最初にDBに初期データ投入して、それをGETで引っ張ってくる -> /api/check GET
+  - /init ボタン押すとDBにPOSTでデータ入れる -> /api/check POST
+- 
+
+## trouble shoot
+- 配信されてるっぽいのに真っ白 `Uncaught (in promise) TypeError: Response has unsupported MIME type`
+  - これはサーバ(静的ファイルホスト側)がwasmを送れない(Header対応してない)ことが原因
+  - wasmについてtypesを入れると解決。`default_type`もplainに変更
 
 ## log
 - 2020/10/27
@@ -61,3 +79,6 @@ $ make db_down
   - templateを使ってlocalでyewの立ち上げ完了。これを書き換えていく
   - yewとactixの連携をしたい。単純にAPIサーバとして分離した形をとるので、あまりexampleみなくてもできそう。ただ、Dockerに2つとも別々に載せてcomposeで確認する手間はあるかも
   - devの方を確定させたい。devでcomposeでfrontとbackの連携をとってnginx reverse proxyまでいきたい。
+- 2020/11/04
+  - nginx複数やっていいのかと思ったけど、ファイルをホストするとことIPbanを行うところ一緒だといろいろめんどくさいというか、単一nginxに盛る理由はなさそう。速度低下が気になるけど、今回はそういうところを考えて完成までいきつかないリスクが大きいので許容する。
+  - CDNとかのパターンも経験してみたいけど今回は後回しで。
