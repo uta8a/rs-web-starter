@@ -11,6 +11,7 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
     volumes:
       - ../backend/pg:/docker-entrypoint-initdb.d
+    restart: always
   backend:
     build:
       context: ../backend
@@ -18,8 +19,10 @@ services:
       - "8080:8080"
     depends_on:
       - db
+    restart: always
   frontend:
     build:
       context: ../frontend
     ports:
-      - "80:8000"
+      - "8000:8000"
+    restart: always
