@@ -104,3 +104,5 @@ nginx(Host, VirtualHostと監視を行う) : 80 --> nginx(docker, reverse proxy)
   - 開発段階ではまだ独立したDockerfileでやってよい？でもそのうちbackendもいれないとなあ
   - reverse proxyとfrontendを合体させた
   - webpack分からない
+  - webpack少し分かった
+  - actix-web-starterからrs-web-starterに変更
