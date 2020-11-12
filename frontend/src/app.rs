@@ -8,12 +8,14 @@ use yew::services::storage::{Area, StorageService};
 
 const KEY: &str = "yew.todomvc.self";
 
+// これ実質main=Browser(中身)の中身
 pub struct App {
-    link: ComponentLink<Self>,
-    storage: StorageService,
-    state: State,
+    link: ComponentLink<Self>, // link.callbackという使われ方をしている
+    storage: StorageService, // jsonを扱う？
+    state: State, // これはModel
 }
 
+// stateがModelに当たる？
 #[derive(Serialize, Deserialize)]
 pub struct State {
     entries: Vec<Entry>,
@@ -21,7 +23,7 @@ pub struct State {
     value: String,
     edit_value: String,
 }
-
+// これはModelの中のデータを切り出したもの
 #[derive(Serialize, Deserialize)]
 struct Entry {
     description: String,
@@ -29,6 +31,7 @@ struct Entry {
     editing: bool,
 }
 
+// Msg, 動作に対して行われるメソッド
 pub enum Msg {
     Add,
     Edit(usize),
@@ -47,6 +50,7 @@ impl Component for App {
     type Message = Msg;
     type Properties = ();
 
+    // init
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         let storage = StorageService::new(Area::Local).unwrap();
         let entries = {
@@ -72,7 +76,7 @@ impl Component for App {
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
         false
     }
-
+    // update
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::Add => {
@@ -122,7 +126,7 @@ impl Component for App {
         self.storage.store(KEY, Json(&self.state.entries));
         true
     }
-
+    // view
     fn view(&self) -> Html {
         info!("rendered!");
         html! {
@@ -162,7 +166,7 @@ impl Component for App {
         }
     }
 }
-
+// HTMLの部品を置く
 impl App {
     fn view_filter(&self, filter: Filter) -> Html {
         let flt = filter.clone();
@@ -263,7 +267,7 @@ impl Filter {
         }
     }
 }
-
+// ここはModelに対し生えるMsgを書いている？
 impl State {
     fn total(&self) -> usize {
         self.entries.len()
