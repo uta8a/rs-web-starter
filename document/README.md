@@ -1,5 +1,5 @@
 ## 目標
-- Actix-webで作ったサーバをDockerに載せて、AWSにデプロイして確認までを爆速で行いたい
+- Actix-webで作ったサーバをDockerに載せて、フロントエンドをyewで書いてDockerに載せて、AWSにデプロイして確認までを爆速で行いたい
 
 ## やること
 - 必要なものをローカル開発PCにansibleで導入する(git, python3, ansibleを入れる立ち上げ用のshellscriptも書いておく)
@@ -10,6 +10,7 @@
   - Rust(Actix-web) -> ok
 - リバースプロキシ
   - nginx(Docker)
+  - frontendもここに載せる
 - HTTPS
   - 証明書の手順もある程度自動化したい
   - 独自ドメイン割り振りもやりたい
@@ -17,6 +18,7 @@
 
 ## やらないこと
 - フロントエンド(あとでやってもいいかも？Elmを使いたい)
+  - yewを使うことにしました。フロントエンドやります。
 - デザイン
 - 認証(あとでやってもいいかも？cookie-session方式でやる)
 
@@ -57,6 +59,18 @@ nginx(Host, VirtualHostと監視を行う) : 80 --> nginx(docker, reverse proxy)
   - /health 単純な文字列を返す -> /api/health
   - /init 最初にDBに初期データ投入して、それをGETで引っ張ってくる -> /api/check GET
   - /init ボタン押すとDBにPOSTでデータ入れる -> /api/check POST
+- yewの使い方が分からない。
+  - Router
+    - https://github.com/yewstack/yew/tree/master/examples/router
+    - でもこのexampleはwasm-packを使ってない？
+    - trunk https://github.com/thedodd/trunk というビルドシステムを使っている
+      - えーでもこれ以上複雑にするのはどうなんだろう。とりあえずwebpackでやっていく
+  - どこまでできるのか
+    - Elm形式だったら、portがめっちゃ必要になるはず？だけどwasm使っているならある程度Rustで書けるはず(web-sysとか)
+- webpack-dev-serverはインメモリで展開するやつで、開発時だけ気にすればよい
+- Cargoでwasm吐き出すのはどこで指定しているんだ...
+  - WasmPackPluginで指定している、webpackの設定ファイルと同じディレクトリに``pkg``ディレクトリを作る。これをimportすると、Rust側のもろもろがjsから使えるようになる。
+  - このとき、WasmPackPluginにはCargo.tomlのあるディレクトリを渡す。今回は同じ階層なので、``.``を渡している。
 - 
 
 ## trouble shoot
@@ -83,3 +97,10 @@ nginx(Host, VirtualHostと監視を行う) : 80 --> nginx(docker, reverse proxy)
   - nginx複数やっていいのかと思ったけど、ファイルをホストするとことIPbanを行うところ一緒だといろいろめんどくさいというか、単一nginxに盛る理由はなさそう。速度低下が気になるけど、今回はそういうところを考えて完成までいきつかないリスクが大きいので許容する。
   - CDNとかのパターンも経験してみたいけど今回は後回しで。
   - 次はbackend側のAPIサーバを作り込みするか。最小限だしすぐつくれるやろ。
+- 2020/11/12
+  - infra以外を作ってしまって、infraのみにする
+  - よく考えたらDockerfileもPwnみたいにしたほうがいいのかな？
+  - frontendについては、nginx(reverse proxy, docker)にのせる(prod)
+  - 開発段階ではまだ独立したDockerfileでやってよい？でもそのうちbackendもいれないとなあ
+  - reverse proxyとfrontendを合体させた
+  - webpack分からない
