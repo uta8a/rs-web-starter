@@ -71,6 +71,7 @@ nginx(Host, VirtualHostと監視を行う) : 80 --> nginx(docker, reverse proxy)
 - Cargoでwasm吐き出すのはどこで指定しているんだ...
   - WasmPackPluginで指定している、webpackの設定ファイルと同じディレクトリに``pkg``ディレクトリを作る。これをimportすると、Rust側のもろもろがjsから使えるようになる。
   - このとき、WasmPackPluginにはCargo.tomlのあるディレクトリを渡す。今回は同じ階層なので、``.``を渡している。
+- yewのawesomeを発見した https://github.com/jetli/awesome-yew
 - 
 
 ## trouble shoot
