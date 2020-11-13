@@ -72,6 +72,8 @@ nginx(Host, VirtualHostと監視を行う) : 80 --> nginx(docker, reverse proxy)
   - WasmPackPluginで指定している、webpackの設定ファイルと同じディレクトリに``pkg``ディレクトリを作る。これをimportすると、Rust側のもろもろがjsから使えるようになる。
   - このとき、WasmPackPluginにはCargo.tomlのあるディレクトリを渡す。今回は同じ階層なので、``.``を渡している。
 - yewのawesomeを発見した https://github.com/jetli/awesome-yew
+- yewのテンプレートをElm architectureに沿って理解チャレンジした記録
+  - https://github.com/uta8a/rs-web-starter/blob/7b8d35ab46d5864c4b125892144b29a0df61f6b3/frontend/src/app.rs
 - 
 
 ## trouble shoot
@@ -107,3 +109,4 @@ nginx(Host, VirtualHostと監視を行う) : 80 --> nginx(docker, reverse proxy)
   - webpack分からない
   - webpack少し分かった
   - actix-web-starterからrs-web-starterに変更
+  - Elm architectureに沿って、カウンタアプリを作ってみる？その後それにrouter導入していくみたいな
