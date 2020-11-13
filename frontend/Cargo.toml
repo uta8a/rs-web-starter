@@ -1,5 +1,5 @@
 [package]
-name = "yew-wasm-pack-template"
+name = "frontend"
 version = "0.2.0"
 authors = ["uta8a"]
 edition = "2018"

@@ -5,12 +5,13 @@ use strum_macros::{EnumIter, ToString};
 use yew::format::Json;
 use yew::prelude::*;
 use yew::services::storage::{Area, StorageService};
+use yew::html::Scope;
 
 const KEY: &str = "yew.todomvc.self";
 
 // これ実質main=Browser(中身)の中身
-pub struct App {
-    link: ComponentLink<Self>, // link.callbackという使われ方をしている
+pub struct Model {
+    link: ComponentLink<Self>, // link.callbackという使われ方をしている recursion_limitが関係している
     storage: StorageService, // jsonを扱う？
     state: State, // これはModel
 }
@@ -22,6 +23,7 @@ pub struct State {
     filter: Filter,
     value: String,
     edit_value: String,
+    
 }
 // これはModelの中のデータを切り出したもの
 #[derive(Serialize, Deserialize)]
@@ -46,7 +48,7 @@ pub enum Msg {
     Nope,
 }
 
-impl Component for App {
+impl Component for Model {
     type Message = Msg;
     type Properties = ();
 
@@ -66,7 +68,7 @@ impl Component for App {
             value: "".into(),
             edit_value: "".into(),
         };
-        App {
+        Model {
             link,
             storage,
             state,
@@ -130,44 +132,14 @@ impl Component for App {
     fn view(&self) -> Html {
         info!("rendered!");
         html! {
-            <div class="todomvc-wrapper">
-                <section class="todoapp">
-                    <header class="header">
-                        <h1>{ "todos" }</h1>
-                        { self.view_input() }
-                    </header>
-                    <section class="main">
-                        <input class="toggle-all" type="checkbox" checked=self.state.is_all_completed() onclick=self.link.callback(|_| Msg::ToggleAll) />
-                        <ul class="todo-list">
-                            { for self.state.entries.iter().filter(|e| self.state.filter.fit(e))
-                                .enumerate()
-                                .map(|val| self.view_entry(val)) }
-                        </ul>
-                    </section>
-                    <footer class="footer">
-                        <span class="todo-count">
-                            <strong>{ self.state.total() }</strong>
-                            { " item(s) left" }
-                        </span>
-                        <ul class="filters">
-                            { for Filter::iter().map(|flt| self.view_filter(flt)) }
-                        </ul>
-                        <button class="clear-completed" onclick=self.link.callback(|_| Msg::ClearCompleted)>
-                            { format!("Clear completed ({})", self.state.total_completed()) }
-                        </button>
-                    </footer>
-                </section>
-                <footer class="info">
-                    <p>{ "Double-click to edit a todo" }</p>
-                    <p>{ "Written by " }<a href="https://github.com/DenisKolodin/" target="_blank">{ "Denis Kolodin" }</a></p>
-                    <p>{ "Part of " }<a href="http://todomvc.com/" target="_blank">{ "TodoMVC" }</a></p>
-                </footer>
+            <div id="root">
+                {"hello wasm"}
             </div>
         }
     }
 }
 // HTMLの部品を置く
-impl App {
+impl Model {
     fn view_filter(&self, filter: Filter) -> Html {
         let flt = filter.clone();
 
@@ -360,3 +332,5 @@ impl State {
         self.entries.remove(idx);
     }
 }
+
+
