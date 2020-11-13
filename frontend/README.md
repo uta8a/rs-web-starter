@@ -130,3 +130,5 @@ const playwright = require('playwright');
 })();
 ```
 - chrome以外では真っ白だった。wasm対応かなあ。
+- chromiumでテストする、他の環境は後回しにする。
+- シュッとやりたいことができてしまったので、フロントHTMLのテスト駆動でViewを書き込んでいこうと思う。
