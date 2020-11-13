@@ -81,6 +81,51 @@ nginx(Host, VirtualHostと監視を行う) : 80 --> nginx(docker, reverse proxy)
   - これはサーバ(静的ファイルホスト側)がwasmを送れない(Header対応してない)ことが原因
   - wasmについてtypesを入れると解決。`default_type`もplainに変更
 
+## infra
+- AWSでEC2をterraformで立てることができた。ssh接続はまだなので次はssh接続から。
+- awsは月の使用量Free枠があるみたいで、一瞬で立てて消すだけではお金はかからない(ただ、Route53はお金かかるので注意)
+
+## frontend(yew)
+- reverse proxyとフロントエンド一体化させた
+- yewについて、テスト駆動開発をしてElmのようにView, Model, Updateを書いていくスタイルをしたかったのだが、これが無理だと思ったのでテストを書くのを断念
+  - 理由 ``wasm_bindgen_test`` attributeがついているので ``wasm-pack test --firefox`` ``wasm-pack test --firefox --headless`` でテストする。このとき ``tests/web.rs``のテストが主に実行されるのだけど、headlessはえらーで落ちる。
+  - まずはchromeをいれてwebdriverとのメインバージョンを合わせる。
+  - 次に、 ``RUST_LOG=wasm_bindgen_test_runner wasm-pack test --headless --chrome``としてログを見る
+  - ``driver status: signal: 9 `` ``Error: failed to find element reference in response`` 系のログはおそらくdocumentが２つ存在していることが理由？これを解決する方法は見つけられなかった。
+- yew側でDOM Nodeをとってきたいが、立ち上げの``yew::App::<Model>::new()``から直接``web_sys::document``相当のものを取ってくる方法が見つからない。
+  - Scopeのnewが0.15->0.16の変更で潰されて、代わりに``get_component``が導入された(documentにはnewは``visible for testing``とあったので、テスト用だったと思われる)
+  - ``let doc = yew::App::<Model>::new().mount_as_body().get_component().unwrap().view();``でVNodeを取得できるが、VNodeからクラスやid, innerTextを得る方法が分からなかった。
+- 結局blackbox testではあるけれど、headless browserを扱えるplaywrightというmicrosoft製のjsライブラリを使ってテスト。
+```js
+const playwright = require('playwright');
+
+(async () => {
+  for (const browserType of ['chromium', 'firefox', 'webkit']) {
+    // ここのbrowserTypeを変えることで、対象のブラウザを変更することができます。
+    const browser = await playwright[browserType].launch();
+    const context = await browser.newContext();
+    const page = await context.newPage();
+
+    await page.goto('http://localhost:8000/');
+    await page.screenshot({ path: `example-${browserType}.png` });
+    await browser.close();
+  }
+})();
+```
+- スクリーンショットをとると、firefox, webkitでは真っ白になったので、不具合かheadless browser側でwasmがONになっていない可能性がある。
+- 結局chromiumでテストすることに
+
+## yewの限界とフロントエンドフレームワークへの気持ち
+- そもそもyewでCanvasとかやろうとすると結局``web_sys``などを使うことになる。``wasm_bindgen``を隠蔽するのがフレームワークの仕事だけど、まだ追いついていないように思える。Rustはunsafeなパターンを解決するためにメソッドがたくさん用意されていて、安全に賢い人が考えたパターンを使えると思っていて、wasmへのバインドも似たような方法で解決されてほしいと思っているので、フレームワークはたくさんのメソッドと最小限のexampleを用意すべきという考えに至る。
+- 他のpercyなどのライブラリが結局何をしているかというと、``wasm_bindgen``のwrapperとして、特に``html!``マクロ``Virtual DOM``の提供になると思う。js周りは触っていないのでまだ分からない。
+- つまり、html周りに関してはこの2つを使い勝手の良い形、型検査を入れる形でやればライブラリが作れるのでは？という感じ。
+
+## そもそもハッカソンに向けて何を整備すべきか？
+- そもそも、ハッカソンはチーム戦なので、Rust好きで固めないとこのリポジトリを役立てるのは難しそう。
+- ブラウザ対応の問題もある、Safariってどうなんだろう
+- ハッカソンでは高速に作り上げることが大事なので、NuxtjsやNextjsで、Vercelなどを使うべきなのかも...？
+- フロントエンドRustはまだまだなので、TypeScript(Nextjs)+Server(Actix)みたいな感じにするとして、このバックエンド側をめちゃくちゃ高速に開発できるようにする方が準備としては正しいのかもしれない。
+
 ## log
 - 2020/10/27
   - ディレクトリ構成など
